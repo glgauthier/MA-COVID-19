@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from tabula import read_pdf
 import time, os, glob, csv
 
-
 options = webdriver.ChromeOptions()
 
 options.add_experimental_option('prefs', {
@@ -52,19 +51,21 @@ for i in range(len(keys)-1):
 
 print(counties)
 print(stats)
-        
-with open('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w') as csvfile:
-    fieldnames = ['county', 'cases']
-    writer = csv.writer(csvfile,delimiter=',')
-    writer.writerow(fieldnames)
 
-    for i in counties:
-        writer.writerow([i, counties[i]])
-        
-with open('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w') as csvfile:
-    fieldnames = ['stat', 'cases']
-    writer = csv.writer(csvfile,delimiter=',')
-    writer.writerow(fieldnames)
+if not os.path.exists('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv')):
+    with open('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
+        fieldnames = ['county', 'cases']
+        writer = csv.writer(csvfile,delimiter=',')
+        writer.writerow(fieldnames)
 
-    for i in stats:
-        writer.writerow([i, stats[i]])
+        for i in counties:
+            writer.writerow([i, counties[i]])
+
+if not os.path.exists('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv')):
+    with open('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
+        fieldnames = ['stat', 'cases']
+        writer = csv.writer(csvfile,delimiter=',')
+        writer.writerow(fieldnames)
+
+        for i in stats:
+            writer.writerow([i, stats[i]])
