@@ -16,7 +16,7 @@ d3.json("data/cases.json", function(error, data) {
 var projection;
 var viewportWidth = document.documentElement.clientWidth;
 var viewportHeight = document.documentElement.clientHeight/2;
-var width = viewportWidth * .8;
+var width = viewportWidth*0.9 < 1000 ? viewportWidth*0.9 : 1000 ;
 var height = width/2;
 var centerX, centerY;
 var path;
@@ -33,7 +33,7 @@ function drawGraphic(){
     d3.selectAll("text").remove();
     viewportWidth = document.documentElement.clientWidth;
     viewportHeight = document.documentElement.clientHeight/2;
-    width = viewportWidth * .8;
+    width = viewportWidth*0.9 < 1000 ? viewportWidth*0.9 : 1000 ;
     height = width/2;
 
     path = d3.geo.path();
