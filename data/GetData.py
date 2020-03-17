@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from tabula import read_pdf
-import time, os, glob, csv
+import time, os, glob, csv, json, re
 
 # set up chrome options to auto-download PDF rather than view it in browser
 options = webdriver.ChromeOptions()
@@ -23,10 +23,12 @@ except:
 browser.find_elements_by_partial_link_text("COVID-19 cases in Massachusetts as of")[0].click()
 print("waiting for dowload...")
 time.sleep(5)
+driver.quit()
 
 # parse out the data
 list_of_files = glob.glob('pdf/*')
-latest_file = max(list_of_files, key=os.path.getctime)
+latest_file = max(list_of_files, key=os.path.getmtime)
+print("all files:",list_of_files)
 print("latest file is",latest_file)
 
 df = read_pdf(latest_file)[0]
@@ -66,3 +68,26 @@ if not os.path.exists('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','
 
         for i in stats:
             writer.writerow([i, stats[i]])
+
+# save the data to the webpage folder
+print("loading current file")
+jsonPath = os.path.dirname(os.getcwd())+"\\docs\\data\\cases.json";
+jsonData = {}
+with open(jsonPath, 'r') as f:
+    jsonData = json.load(f)
+
+latest = re.compile(r'\d-\d\d-\d\d\d\d').search(latest_file).group()
+
+if not latest in jsonData.keys():
+    jsonData[latest] = counties
+    with open(jsonPath, 'w') as json_file:
+        json.dump(jsonData, json_file)
+        print("wrote new entry to file")
+else:
+    print("no new entries to write to file, deleting duplicate download")
+    os.remove(latest_file)
+    
+    
+
+
+

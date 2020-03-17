@@ -1,16 +1,39 @@
 var cases;
 var minCases;
 var maxCases;
+var selectedDate = "3-17-2020";
+var previousDate = "3-16-2020";
+var pop2018 = {"Barnstable": 213413, "Berkshire": 126348, "Bristol": 564022, "Essex": 790638, "Hampden": 470406, "Hampshire":161355, "Middlesex": 1614714, "Norfolk": 705388, "Plymouth": 518132, "Suffolk": 807252, "Worcester": 830839, "Franklin": 70963, "Dukes":17352,"Nantucket":11327};
 
 d3.json("data/cases.json", function(error, data) {
     console.log(data);
     cases=data;
-    let date = "March_16";
-    let summary = d3.sum(Object.values(cases[date])).toString() + " total cases as of "+date.replace("_"," ");
-    minCases = d3.min(Object.values(cases[date]));
-    maxCases = d3.max(Object.values(cases[date]));
-    document.getElementById("summary").innerHTML = summary;
-    drawGraphic();
+    
+    Object.keys(cases).forEach(c=>{
+        var btn = document.createElement("BUTTON"); 
+        let count = d3.sum(Object.values(cases[c])).toString();
+        btn.innerHTML = c.replace("-2020","")+" ("+count+")";    
+        btn.id = c;
+        btn.classList.add("dateSelectorButton");
+        btn.onclick = function(){
+            selectedDate = this.id;
+            previousDate = Object.keys(cases)[Object.keys(cases).indexOf(this.id)-1] ? Object.keys(cases)[Object.keys(cases).indexOf(this.id)-1] : this.id;
+            let currentCases = d3.sum(Object.values(cases[selectedDate]));
+            let prevCases = d3.sum(Object.values(cases[previousDate]));
+            let summary = "<b>"+currentCases.toString() + " total cases as of "+selectedDate+"</b>";
+            if(selectedDate != previousDate)
+                summary+="<br>"+(100*(currentCases-prevCases)/prevCases).toFixed(2)+"% increase relative to "+previousDate;
+            let pop = d3.sum(Object.values(pop2018));
+            summary+= "<br>"+(100*(currentCases)/pop).toFixed(4)+"% population relative to 2018 census"
+            minCases = d3.min(Object.values(cases[selectedDate]));
+            maxCases = d3.max(Object.values(cases[selectedDate]));
+            document.getElementById("summary").innerHTML = summary;
+            drawGraphic();
+        }
+        document.getElementById("dateSelector").appendChild(btn);
+    });
+    
+    document.querySelectorAll(".dateSelectorButton")[Object.keys(cases).length-1].click();
 });
 
 var projection;
@@ -63,7 +86,7 @@ function drawGraphic(){
             .style({
                       fill: function(d, i) {
                         let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
-                        let c = cases["March_16"][name] != undefined ? cases["March_16"][name]: 0;
+                        let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name]: 0;
                         return c>0 ? d3.interpolateOranges((c-minCases)/maxCases) : "#fff";
                       },
                       stroke: "#aaa"
@@ -76,8 +99,30 @@ function drawGraphic(){
             .data(featureCollection.features)
             .enter()
             .append("text")
-            .text(function(d, i) {let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
-                       return cases["March_16"][name] != undefined ? cases["March_16"][name]: 0;})
+            .text(function(d, i) {
+                let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase();
+                let val = cases[selectedDate][name] != undefined ? cases[selectedDate][name]: 0;
+                let extraTextMode = document.querySelector('input[name="percent"]:checked').value;
+                if(extraTextMode == "pop")
+                {
+                    let percent = (100*val/pop2018[name]).toFixed(3)+"%";
+                    return val.toString()+" ("+percent+")";
+                }
+                else if(extraTextMode == "daily")
+                {
+                    let prevVal = cases[previousDate][name] != undefined ? cases[previousDate][name]: 0;
+                    let percent = val==prevVal ? "+0.0%" : "+"+(100*(val-prevVal)/prevVal).toFixed(0)+"%";
+                    return val.toString()+" ("+percent+")";
+                }
+                else if(extraTextMode == "count")
+                {
+                    let prevVal = cases[previousDate][name] != undefined ? cases[previousDate][name]: 0;
+                    return val.toString()+" (+"+(val-prevVal).toFixed(0)+")";
+                }
+                else{
+                    return val;
+                }
+            })
             .attr("x", function(d,i) { return getBoundingBoxCenter(d3.select(d3.selectAll("path")[0][i]))[0] })
             .attr("y", function(d,i) { return getBoundingBoxCenter(d3.select(d3.selectAll("path")[0][i]))[1] });
     });
@@ -95,7 +140,7 @@ function handleMouseOver(d, i) {
     var html  = "<span style='color:" + color + ";'>" + name + "</span><br/>";
     if(cases || false)
     {
-        let c = cases["March_16"][name] != undefined ? cases["March_16"][name].toString() : "None";
+        let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name].toString() : "None";
         console.log(c);
         html += c
     }
@@ -112,7 +157,7 @@ function handleMouseOut(d, i) {
     d3.select(this).style({
       fill: function(d, i) {
         let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
-        let c = cases["March_16"][name] != undefined ? cases["March_16"][name]: 0;
+        let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name]: 0;
         return c>0 ? d3.interpolateOranges((c-minCases)/maxCases) : "#fff";
       },
       stroke: "#aaa"
@@ -123,8 +168,8 @@ function handleMouseOut(d, i) {
 }
 
 function handleMouseClick(d,i){
-    var name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
-    document.getElementById("infoText").innerHTML = name;
+//    var name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
+//    document.getElementById("infoText").innerHTML = name;
 }
 
 function getBoundingBoxCenter (selection) {

@@ -11,12 +11,18 @@
                     pointer-events: none;
                     background-color: white;
                 }
+            h1{font-size:26px}
         </style>
     </head>
     <body>
         
         <h1>Massachusetts COVID-19 Cases</h1>
         <p id="summary">Loading...</p>
+        <input type="radio" name="percent" value="pop" onclick="drawGraphic()">Show % relative to population
+        <input type="radio" name="percent" value="daily" onclick="drawGraphic()">Show % increase relative to previous day
+        <input type="radio" name="percent" value="count" onclick="drawGraphic()">Show count increase
+        <input type="radio" name="percent" value="none" onclick="drawGraphic()" checked>None
+        <p id="dateSelector"></p>
         <svg></svg>
         <p><span id="infoText"></span></p>
         <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -25,6 +31,8 @@
         <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
         <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
         <script src="main.js"></script>
-        <a href="https://github.com/glgauthier/MA-COVID-19" target="_blank">Source code, attribution, and data available here</a>
+        <a href="https://raw.githubusercontent.com/glgauthier/MA-COVID-19/master/docs/data/cases.json" target="_blank">Raw Data (Compiled from Mass. Dept of Health)</a>
+        <br>
+        <a href="https://github.com/glgauthier/MA-COVID-19" target="_blank">Source and Attribution</a>
     </body>
 </html>
