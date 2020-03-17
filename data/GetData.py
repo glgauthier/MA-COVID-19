@@ -39,7 +39,7 @@ values = df['NUMBER OF'].tolist()
 
 counties = {}
 stats = {}
-for i in range(len(keys)-1): 
+for i in range(len(keys)): 
     if keys[i] in countyNames:
         counties[keys[i]] = values[i]
     elif keys[i] in statNames:

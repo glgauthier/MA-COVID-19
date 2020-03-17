@@ -1,3 +1,29 @@
 <html>
-Hello, world
+    <meta name=”viewport” content=”width=device-width, initial-scale=1″>
+    <head>
+        
+        <style>
+            .tooltip {
+                    position: absolute;
+                    font-size: 12px;
+                    width:  auto;
+                    height: auto;
+                    pointer-events: none;
+                    background-color: white;
+                }
+        </style>
+    </head>
+    <body>
+        <h1>Massachusetts COVID-19 Cases</h1>
+        <p id="summary">Loading...</p>
+        <p>Click a county to view info</p>
+        <svg></svg>
+        <p><span id="infoText"></span></p>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="https://d3js.org/topojson.v1.min.js"></script>
+        <script src="https://d3js.org/d3-color.v1.min.js"></script>
+        <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+        <script src="main.js"></script>
+    </body>
 </html>
