@@ -23,7 +23,7 @@ except:
 browser.find_elements_by_partial_link_text("COVID-19 cases in Massachusetts as of")[0].click()
 print("waiting for dowload...")
 time.sleep(5)
-driver.quit()
+browser.quit()
 
 # parse out the data
 list_of_files = glob.glob('pdf/*')
@@ -50,27 +50,7 @@ for i in range(len(keys)):
 print(counties)
 print(stats)
 
-# save the data to file
-if not os.path.exists('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv')):
-    with open('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
-        fieldnames = ['county', 'cases']
-        writer = csv.writer(csvfile,delimiter=',')
-        writer.writerow(fieldnames)
-
-        for i in counties:
-            writer.writerow([i, counties[i]])
-
-if not os.path.exists('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv')):
-    with open('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
-        fieldnames = ['stat', 'cases']
-        writer = csv.writer(csvfile,delimiter=',')
-        writer.writerow(fieldnames)
-
-        for i in stats:
-            writer.writerow([i, stats[i]])
-
 # save the data to the webpage folder
-print("loading current file")
 jsonPath = os.path.dirname(os.getcwd())+"\\docs\\data\\cases.json";
 jsonData = {}
 with open(jsonPath, 'r') as f:
@@ -82,7 +62,23 @@ if not latest in jsonData.keys():
     jsonData[latest] = counties
     with open(jsonPath, 'w') as json_file:
         json.dump(jsonData, json_file)
-        print("wrote new entry to file")
+        # save the data to file
+        if not os.path.exists('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv')):
+            with open('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
+                fieldnames = ['county', 'cases']
+                writer = csv.writer(csvfile,delimiter=',')
+                writer.writerow(fieldnames)
+                for i in counties:
+                    writer.writerow([i, counties[i]])
+
+        if not os.path.exists('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv')):
+            with open('csv/stats/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
+                fieldnames = ['stat', 'cases']
+                writer = csv.writer(csvfile,delimiter=',')
+                writer.writerow(fieldnames)
+                for i in stats:
+                    writer.writerow([i, stats[i]])
+        print("wrote new entries to file")
 else:
     print("no new entries to write to file, deleting duplicate download")
     os.remove(latest_file)
