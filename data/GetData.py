@@ -3,16 +3,16 @@ from selenium.webdriver.common.by import By
 from tabula import read_pdf
 import time, os, glob, csv
 
+# set up chrome options to auto-download PDF rather than view it in browser
 options = webdriver.ChromeOptions()
-
 options.add_experimental_option('prefs', {
-"download.default_directory":  os.getcwd()+"\\pdf\\", #Change default directory for downloads
-"download.prompt_for_download": False, #To auto download the file
-"download.directory_upgrade": True,
-"plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
+    "download.default_directory":  os.getcwd()+"\\pdf\\", #Change default directory for downloads
+    "download.prompt_for_download": False, #To auto download the file
+    "download.directory_upgrade": True,
+    "plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
 })
-
     
+# open chrome, download the newest copy of the data
 browser = webdriver.Chrome(options=options)
 browser.get('https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring')
 try:
@@ -20,15 +20,11 @@ try:
     browser.find_element(By.XPATH, '//button[text()="No thanks"]').click();
 except:
     print("no prompt to close, continuing to download")
-    
-# download the newest data
-
 browser.find_elements_by_partial_link_text("COVID-19 cases in Massachusetts as of")[0].click()
 print("waiting for dowload...")
 time.sleep(5)
-# parse the file
 
-# start by getting newest
+# parse out the data
 list_of_files = glob.glob('pdf/*')
 latest_file = max(list_of_files, key=os.path.getctime)
 print("latest file is",latest_file)
@@ -52,6 +48,7 @@ for i in range(len(keys)-1):
 print(counties)
 print(stats)
 
+# save the data to file
 if not os.path.exists('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv')):
     with open('csv/cases/'+os.path.split(latest_file)[1].replace('pdf','csv'), 'w', newline='\n') as csvfile:
         fieldnames = ['county', 'cases']
