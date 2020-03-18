@@ -12,7 +12,7 @@ d3.json("data/cases.json", function(error, data) {
     Object.keys(cases).forEach(c=>{
         var btn = document.createElement("BUTTON"); 
         let count = d3.sum(Object.values(cases[c])).toString();
-        btn.innerHTML = c.replace("-2020","")+" ("+count+")";    
+        btn.innerHTML = '<span style="color:black">'+ c.replace("-2020","")+"</span> ("+count+")";    
         btn.id = c;
         btn.classList.add("dateSelectorButton");
         btn.onclick = function(){
@@ -123,6 +123,7 @@ function drawGraphic(){
                     return val;
                 }
             })
+            .attr("style","text-shadow:  0px 2px 2px rgba(255, 255, 255, 0.8)")
             .attr("x", function(d,i) { return getBoundingBoxCenter(d3.select(d3.selectAll("path")[0][i]))[0] })
             .attr("y", function(d,i) { return getBoundingBoxCenter(d3.select(d3.selectAll("path")[0][i]))[1] });
     });

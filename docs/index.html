@@ -3,6 +3,20 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
+            body{
+               font-family: Arial, Helvetica, sans-serif;
+            }
+            button{
+                  background-color: #ccc; /* Green */
+                  border: none;
+                  color: #c96500;
+                  padding: 2px 5px;
+                  margin-right:2px;
+                  text-align: center;
+                  text-decoration: none;
+                  display: inline-block;
+                  font-size: 13px;
+            }
             .tooltip {
                     position: absolute;
                     font-size: 12px;
@@ -17,6 +31,7 @@
     <body>
         
         <h1>Massachusetts COVID-19 Cases</h1>
+        <a href="https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring" target="_blank">Please visit the Mass. Dept. of Public Health site for the most up to date information</a>
         <p id="summary">Loading...</p>
         <input type="radio" name="percent" value="pop" onclick="drawGraphic()">Show % relative to population
         <input type="radio" name="percent" value="daily" onclick="drawGraphic()">Show % increase relative to previous day
