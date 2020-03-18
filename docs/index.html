@@ -33,10 +33,15 @@
         <h1>Massachusetts COVID-19 Cases</h1>
         <a href="https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring" target="_blank">Please visit the Mass. Dept. of Public Health site for the most up to date information</a>
         <p id="summary">Loading...</p>
-        <input type="radio" name="percent" value="pop" onclick="drawGraphic()">Show % relative to population
-        <input type="radio" name="percent" value="daily" onclick="drawGraphic()">Show % increase relative to previous day
-        <input type="radio" name="percent" value="count" onclick="drawGraphic()">Show count increase
-        <input type="radio" name="percent" value="none" onclick="drawGraphic()" checked>None
+        Show values for:<br>
+        <input type="radio" name="percent" value="pop" onclick="drawGraphic()">% Relative to population
+        <input type="radio" name="percent" value="daily" onclick="drawGraphic()">% Increase relative to previous day
+        <input type="radio" name="percent" value="count" onclick="drawGraphic()">Count increase
+        <input type="radio" name="percent" value="none" onclick="drawGraphic()" checked>Count
+        <br>
+        Color by:<br> 
+        <input type="radio" name="color" value="count" onclick="drawGraphic()" checked>Case count
+        <input type="radio" name="color" value="density" onclick="drawGraphic()">Cases/population
         <p id="dateSelector"></p>
         <svg></svg>
         <p><span id="infoText"></span></p>

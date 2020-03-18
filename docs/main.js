@@ -87,7 +87,15 @@ function drawGraphic(){
                       fill: function(d, i) {
                         let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
                         let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name]: 0;
-                        return c>0 ? d3.interpolateOranges((c-minCases)/maxCases) : "#fff";
+                        let colormode = document.querySelector('input[name="color"]:checked').value;
+                        if(colormode == "count")
+                        {
+                            return c>0 ? d3.interpolateOranges((c-minCases)/maxCases) : "#fff";
+                        }
+                        else
+                        {
+                            return c>0 ? d3.interpolateOranges(c/pop2018[name]) : "#fff";
+                        }
                       },
                       stroke: "#aaa"
                     })
@@ -138,13 +146,22 @@ var tooltip = d3.select("body")
 function handleMouseOver(d, i) {  
     var color = "#000"
     var name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase();
+    let countyCases = cases[selectedDate][name] ? cases[selectedDate][name]:0;
+    let countyPrevCases = selectedDate!=previousDate ? cases[previousDate][name] : countyCases;
+    if(isNaN(countyPrevCases)) countyPrevCases = 0;
+    
+    let countyCaseIncrease = countyCases - countyPrevCases;
+    let percentCountyCaseIncrease = (100*(countyCases-countyPrevCases)/countyPrevCases);
+    if (isNaN(percentCountyCaseIncrease)) percentCountyCaseIncrease = 0;
+    
+    let percentCounty = 100*countyCases/pop2018[name];
+    let percentTotal = 100*countyCases / d3.sum(Object.values(cases[selectedDate]));
+        
     var html  = "<span style='color:" + color + ";'>" + name + "</span><br/>";
-    if(cases || false)
-    {
-        let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name].toString() : "None";
-        console.log(c);
-        html += c
-    }
+    html += countyCases+" cases as of "+selectedDate +"<br/>";
+    html += "+"+ countyCaseIncrease.toFixed(0) + " cases (+"+percentCountyCaseIncrease.toFixed(0)+"%) since "+previousDate.replace("-2020","")+"<br/>";   
+    html += percentCounty.toFixed(4) + "% of county ("+countyCases+"/"+numberWithCommas(pop2018[name])+" people)<br/>";
+    html += percentTotal.toFixed(0) + "% of total cases in MA";
     
     tooltip.html(html)
         .style("left", (d3.event.pageX + 15) + "px")
@@ -157,9 +174,17 @@ function handleMouseOver(d, i) {
 function handleMouseOut(d, i) {
     d3.select(this).style({
       fill: function(d, i) {
-        let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
-        let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name]: 0;
-        return c>0 ? d3.interpolateOranges((c-minCases)/maxCases) : "#fff";
+          let name = d.properties.COUNTY.charAt(0).toUpperCase() + d.properties.COUNTY.slice(1).toLowerCase()
+          let c = cases[selectedDate][name] != undefined ? cases[selectedDate][name]: 0;
+          let colormode = document.querySelector('input[name="color"]:checked').value;
+          if(colormode == "count")
+          {
+              return c>0 ? d3.interpolateOranges((c-minCases)/maxCases) : "#fff";
+          }
+          else
+          {
+              return c>0 ? d3.interpolateOranges(c/pop2018[name]) : "#fff";
+          }
       },
       stroke: "#aaa"
     });
@@ -177,6 +202,10 @@ function getBoundingBoxCenter (selection) {
   var element = selection.node();
   var bbox = element.getBBox();
   return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 window.addEventListener("resize", drawGraphic);
