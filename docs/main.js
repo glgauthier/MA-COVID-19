@@ -94,7 +94,7 @@ function drawGraphic(){
                         }
                         else
                         {
-                            return c>0 ? d3.interpolateOranges(c/pop2018[name]) : "#fff";
+                            return c>0 ? d3.interpolateOranges((c/pop2018[name])*1000) : "#fff";
                         }
                       },
                       stroke: "#aaa"
@@ -183,7 +183,7 @@ function handleMouseOut(d, i) {
           }
           else
           {
-              return c>0 ? d3.interpolateOranges(c/pop2018[name]) : "#fff";
+              return c>0 ? d3.interpolateOranges((c/pop2018[name])*1000) : "#fff";
           }
       },
       stroke: "#aaa"
